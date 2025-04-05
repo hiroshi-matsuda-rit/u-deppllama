@@ -43,6 +43,9 @@ CP = ']'
 
 VERBOSE=False
 
+def f1(gold: int, result: int, correct: int) -> float:
+    return 2. / (gold / correct + result / correct) if correct > 0 else 0.
+
 def print_tree(node, tab = ""):
     print(tab + str(node))
 
@@ -473,8 +476,11 @@ elif test_files:
     gold_standard_file = test_files[0]
     prediction_file = test_files[1]
 
-    corr = 0
-    tot = 0
+    correct_head = 0
+    correct_head_deprel = 0
+    gold_tokens = 0
+    pred_tokens = 0
+    pred_sentences = 0
 
     with open(gold_standard_file, 'r') as file1:
         gold_standard_lines = file1.readlines()
@@ -491,9 +497,9 @@ elif test_files:
             gold_standard_line = gold_standard_lines[i]
             prediction_line = prediction_lines[i]
         except:
-            #print("ERROR: files have different Length")
-            #print("Gold standard file:\t" + str(len(gold_standard_lines)))
-            #print("Prediction  file:\t" + str(len(prediction_lines)))
+            print("ERROR: files have different Length")
+            print("Gold standard file:\t" + str(len(gold_standard_lines)))
+            print("Prediction  file:\t" + str(len(prediction_lines)))
             quit()
 
         #if "Danish-DDT___155\t" not in gold_standard_line:
@@ -506,6 +512,7 @@ elif test_files:
 
         try:            
             gold_deps = get_decode(gold_tree, representation)
+            gold_tokens += len(gold_deps)
         except:
             #print("Problems with gold_standard line " + gold_standard_line)
             #traceback.print_exception(*sys.exc_info())
@@ -517,6 +524,8 @@ elif test_files:
         except Exception:
             try:            
                 pred_deps = get_decode(pred_tree[:-1], representation)
+                pred_tokens = len(pred_deps)
+                pred_sentence += 1
             except Exception:
                 #print("Problems with prediction line " + prediction_line)
                 #print(traceback.format_exc())
@@ -535,25 +544,30 @@ elif test_files:
             #print("Problems with not too short/long prediction " + prediction_line)
             continue
 
-        print(*([""] * 12), f"# text = {gold_sentence}", sep="\t")
+        print(*([""] * 11), f"# text = {gold_sentence}", sep="\t")
         for j in range(min(len(gold_deps), len(pred_deps))):
-            if not is_labeled:
-                gold_rel = int(gold_deps[j+1]["toid"])
-                pred_rel = int(pred_deps[j+1]["toid"])
-            else:
-                gold_rel = str(gold_deps[j+1]["toid"]) + "_" + str(gold_deps[j+1]["deprel"]).split(":")[0]
-                pred_rel = str(pred_deps[j+1]["toid"]) + "_" + str(pred_deps[j+1]["deprel"]).split(":")[0]
-            prefix = "[_]"
+            gold_head = int(gold_deps[j+1]["toid"])
+            pred_head = int(pred_deps[j+1]["toid"])
+            gold_head_deprel = str(gold_deps[j+1]["toid"]) + "_" + str(gold_deps[j+1]["deprel"]).split(":")[0]
+            pred_head_deprel = str(pred_deps[j+1]["toid"]) + "_" + str(pred_deps[j+1]["deprel"]).split(":")[0]
 
-            if gold_rel == pred_rel:
-                corr = corr + 1
-                prefix = "[X]"
-            tot = tot + 1
-            print(prefix + "\t" + str.format('{0:.4f}',(corr/tot)) +  "\t" + print_line(gold_deps[j+1]) + "\t" + print_line(pred_deps[j+1]))
+            if gold_head == pred_head:
+                correct_head += 1
+                prefix = "X"
+            else:
+                prefix = "_"
+            if gold_head_deprel == pred_head_deprel:
+                correct_head_deprel += 1
+                prefix += "X"
+            else:
+                prefix = "_"
+            print(f"[{prefix}]", print_line(gold_deps[j+1]), print_line(pred_deps[j+1]), sep="\t")
         print()
 
-    #print(len(gold_standard_lines))
-    #print(len(prediction_lines))
+    uas = f1(gold_tokens, pred_tokens, correct_head)
+    las = f1(gold_tokens, pred_tokens, correct_head_deprel)
+    print(f"gold_sentences={len(gold_standard_lines)}, {pred_sentences=}, {gold_tokens=}, {pred_tokens}, {correct_head=}, {correct_head_deprel=}")
+    print(f"{uas=:.4f}, {las=:.4f}")
 
 else:
 
