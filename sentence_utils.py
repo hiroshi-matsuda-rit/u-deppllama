@@ -535,7 +535,7 @@ elif test_files:
             print("Problems with not too short/long prediction " + prediction_line)
             continue
 
-        print(*([""] * 12), "# text = {gold_sentence}", sep="\t")
+        print(*([""] * 12), f"# text = {gold_sentence}", sep="\t")
         for j in range(min(len(gold_deps), len(pred_deps))):
             if not is_labeled:
                 gold_rel = int(gold_deps[j+1]["toid"])
