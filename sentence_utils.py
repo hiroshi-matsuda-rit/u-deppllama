@@ -491,9 +491,9 @@ elif test_files:
             gold_standard_line = gold_standard_lines[i]
             prediction_line = prediction_lines[i]
         except:
-            print("ERROR: files have different Length")
-            print("Gold standard file:\t" + str(len(gold_standard_lines)))
-            print("Prediction  file:\t" + str(len(prediction_lines)))
+            #print("ERROR: files have different Length")
+            #print("Gold standard file:\t" + str(len(gold_standard_lines)))
+            #print("Prediction  file:\t" + str(len(prediction_lines)))
             quit()
 
         #if "Danish-DDT___155\t" not in gold_standard_line:
@@ -507,7 +507,7 @@ elif test_files:
         try:            
             gold_deps = get_decode(gold_tree, representation)
         except:
-            print("Problems with gold_standard line " + gold_standard_line)
+            #print("Problems with gold_standard line " + gold_standard_line)
             #traceback.print_exception(*sys.exc_info())
             continue
             #
@@ -518,7 +518,7 @@ elif test_files:
             try:            
                 pred_deps = get_decode(pred_tree[:-1], representation)
             except Exception:
-                print("Problems with prediction line " + prediction_line)
+                #print("Problems with prediction line " + prediction_line)
                 #print(traceback.format_exc())
                 continue
                 #traceback.print_exception(*sys.exc_info())
@@ -526,13 +526,13 @@ elif test_files:
         try:    
             if check_inconsistencies(gold_deps, pred_deps):
                 if not pred_tree.endswith("]"):
-                    print("Problems with not closed prediction " + pred_tree)
+                    pass #print("Problems with not closed prediction " + pred_tree)
                 else:
-                    print("SOLVE")
+                    #print("SOLVE")
                     pred_deps = solve_inconsistencies(gold_deps, pred_deps)
         except Exception:
             #print(traceback.format_exc())
-            print("Problems with not too short/long prediction " + prediction_line)
+            #print("Problems with not too short/long prediction " + prediction_line)
             continue
 
         print(*([""] * 12), f"# text = {gold_sentence}", sep="\t")
