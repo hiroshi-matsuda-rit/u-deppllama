@@ -524,13 +524,13 @@ elif test_files:
         except Exception:
             try:            
                 pred_deps = get_decode(pred_tree[:-1], representation)
-                pred_tokens = len(pred_deps)
-                pred_sentence += 1
             except Exception:
                 #print("Problems with prediction line " + prediction_line)
                 #print(traceback.format_exc())
                 continue
                 #traceback.print_exception(*sys.exc_info())
+        pred_tokens = len(pred_deps)
+        pred_sentences += 1
 
         try:    
             if check_inconsistencies(gold_deps, pred_deps):
@@ -566,7 +566,7 @@ elif test_files:
 
     uas = f1(gold_tokens, pred_tokens, correct_head)
     las = f1(gold_tokens, pred_tokens, correct_head_deprel)
-    print(f"gold_sentences={len(gold_standard_lines)}, {pred_sentences=}, {gold_tokens=}, {pred_tokens}, {correct_head=}, {correct_head_deprel=}")
+    print(f"gold_sentences={len(gold_standard_lines)}, {pred_sentences=}, {gold_tokens=}, {pred_tokens=}, {correct_head=}, {correct_head_deprel=}")
     print(f"{uas=:.4f}, {las=:.4f}")
 
 else:
