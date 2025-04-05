@@ -529,8 +529,6 @@ elif test_files:
                 #print(traceback.format_exc())
                 continue
                 #traceback.print_exception(*sys.exc_info())
-        pred_tokens = len(pred_deps)
-        pred_sentences += 1
 
         try:    
             if check_inconsistencies(gold_deps, pred_deps):
@@ -543,6 +541,8 @@ elif test_files:
             #print(traceback.format_exc())
             #print("Problems with not too short/long prediction " + prediction_line)
             continue
+        pred_tokens += len(pred_deps)
+        pred_sentences += 1
 
         print(*([""] * 11), f"# text = {gold_sentence}", sep="\t")
         for j in range(min(len(gold_deps), len(pred_deps))):
