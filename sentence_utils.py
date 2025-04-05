@@ -499,6 +499,7 @@ elif test_files:
         #if "Danish-DDT___155\t" not in gold_standard_line:
         #    continue
 
+        gold_sentence = gold_standard_line.split("\t")[2]
         gold_tree = gold_standard_line.split("\t")[3].rstrip()
         pred_tree = prediction_line.split("\t")[3].rstrip()
 
@@ -534,6 +535,7 @@ elif test_files:
             print("Problems with not too short/long prediction " + prediction_line)
             continue
 
+        print(f"{'\t' * 12}# text = {gold_sentence}")
         for j in range(min(len(gold_deps), len(pred_deps))):
             if not is_labeled:
                 gold_rel = int(gold_deps[j+1]["toid"])
